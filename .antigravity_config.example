@@ -1,0 +1,38 @@
+# Antigravity Decryptor Configuration Example
+# ============================================
+# 
+# Copy this file to one of these locations:
+#   - ~/.antigravity_config
+#   - ./.antigravity_config
+#   - /etc/antigravity_config
+#
+# Then customize the values below.
+
+[default]
+# Default output format (json or text)
+output_format = json
+
+# Default output directory for batch processing
+output_directory = ./decrypted
+
+# Enable verbose output by default
+verbose = false
+
+[keys]
+# Encryption key (base64 encoded)
+# NOTE: It's more secure to use environment variables!
+# encryption_key = YOUR_KEY_HERE
+
+[paths]
+# Default path to Antigravity conversations (macOS example)
+# conversations_path = ~/.gemini/antigravity/conversations/
+
+[behavior]
+# Show progress bars during batch processing
+show_progress = true
+
+# Skip files that fail to decrypt
+skip_failed = true
+
+# Maximum number of files to process (0 = unlimited)
+max_files = 0

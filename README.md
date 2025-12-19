@@ -2,6 +2,8 @@
 
 A standalone, portable tool to decrypt and extract human-readable conversations from Antigravity IDE's encrypted `.pb` conversation files.
 
+> 🚀 **New user?** Check out the [Quick Start Guide](QUICKSTART.md) to get started in 2 minutes!
+
 ## Quick Start
 
 ```bash
@@ -259,19 +261,30 @@ python antigravity_decrypt.py conversations/ --output decrypted/
 
 ## Troubleshooting
 
-### "Could not retrieve encryption key"
+Having issues? Check out the [comprehensive troubleshooting guide](TROUBLESHOOTING.md) for detailed solutions.
+
+### Quick Fixes
+
+**"Could not retrieve encryption key"**
 - Provide key via `--key` argument or `ANTIGRAVITY_KEY` environment variable
 - On macOS, ensure keychain access is granted
 
-### "Decryption failed"
+**"Decryption failed"**
 - Verify the key is correct (base64 encoded)
 - Check that the file is actually an Antigravity conversation file
 - Try with `--verbose` flag for more details
 
-### "Could not parse protobuf"
+**"Could not parse protobuf"**
 - File may be corrupted
 - File may use a different encryption method (unlikely)
 - Try decrypting with different skip amounts manually
+
+**"No .pb files found"**
+- Check directory path is correct
+- Verify files have `.pb` extension
+- Use absolute paths if needed
+
+For more help, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md) or open an issue on GitHub.
 
 ## Author
 
