@@ -1,4 +1,4 @@
-# Antigravity IDE Conversation Decryptor
+# Antigravity Decryptor
 
 A standalone, portable tool to decrypt and extract human-readable conversations from Antigravity IDE's encrypted `.pb` conversation files.
 
