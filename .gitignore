@@ -1,0 +1,34 @@
+# Decrypted output files
+decrypted/
+decoded/
+*.json
+*.txt
+*.pb
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keys (never commit!)
+*_key*
+*key*.txt
+*.key
+
