@@ -6,14 +6,61 @@ Portable Antigravity IDE Conversation Decryptor
 Decrypts and extracts human-readable conversations from Antigravity IDE's
 encrypted .pb conversation files.
 
-Usage:
-    python antigravity_decrypt.py <input.pb> [--output <output.json>] [--key <key>]
-    python antigravity_decrypt.py <directory> [--output <output_dir>] [--key <key>]
+This tool provides both command-line and programmatic Python API access to
+decrypt conversation files using AES encryption and parse Protocol Buffer
+data without requiring schema files.
+
+Key Features:
+    - Multiple encryption method support (AES-CTR, AES-CBC, AES-GCM)
+    - Automatic key retrieval from macOS Keychain
+    - Batch processing with progress tracking
+    - Beautiful CLI with colors and progress bars
+    - Interactive mode for beginners
+    - JSON and text output formats
+    - Comprehensive error handling
+    - No external schema files required
+
+Command-Line Usage:
+    # Interactive mode (easiest!)
+    python antigravity_decrypt.py --interactive
+    
+    # Single file
+    python antigravity_decrypt.py conversation.pb --output conversation.json
+    
+    # Batch processing
+    python antigravity_decrypt.py ./conversations --output ./decrypted
+    
+    # With custom key
+    python antigravity_decrypt.py file.pb --key "qFl7rbZfqbZoahxeyCwdCg=="
+
+Python API Usage:
+    >>> import base64
+    >>> from antigravity_decrypt import process_conversation_file
+    >>> 
+    >>> key = base64.b64decode("qFl7rbZfqbZoahxeyCwdCg==")
+    >>> result = process_conversation_file("conversation.pb", key)
+    >>> 
+    >>> if result['success']:
+    ...     for msg in result['messages']:
+    ...         print(msg['content'])
+
+Main Functions:
+    - process_conversation_file() - High-level: decrypt and extract in one call
+    - decrypt_file() - Decrypt encrypted file to bytes
+    - parse_protobuf_wire_format() - Parse protobuf without schema
+    - extract_conversation_messages() - Extract readable messages
+    - get_key_from_keychain() - Get key from macOS Keychain
+    - get_key_from_env() - Get key from environment variable
+
+Documentation:
+    See README.md and API_REFERENCE.md for complete documentation.
 
 Requirements:
     pip install cryptography protobuf
 
 Author: Arash Zolfaghari
+License: MIT
+Version: 1.1.0
 """
 
 __version__ = "1.1.0"
@@ -123,7 +170,37 @@ def print_progress_bar(current: int, total: int, prefix: str = '', suffix: str =
 # ============================================================================
 
 def get_key_from_keychain() -> Optional[bytes]:
-    """Retrieve encryption key from macOS Keychain."""
+    """
+    Retrieve encryption key from macOS Keychain (macOS only).
+    
+    Queries the macOS Keychain for the Antigravity encryption key stored by the IDE.
+    This is the most secure and convenient method for macOS users as it doesn't
+    require manual key management.
+    
+    Returns:
+        16-byte AES encryption key, or None if:
+            - Not running on macOS
+            - Key not found in Keychain
+            - Access denied
+            - Keychain query failed
+            
+    Example:
+        >>> key = get_key_from_keychain()
+        >>> if key:
+        ...     print("Key retrieved from Keychain")
+        ... else:
+        ...     print("Failed to retrieve key from Keychain")
+        
+    Keychain Details:
+        - Service name: "Antigravity Safe Storage"
+        - Account name: "Antigravity Key"
+        - Key format: Base64 encoded string (automatically decoded)
+        
+    Note:
+        - Only works on macOS with 'security' command available
+        - May prompt for Keychain access permission first time
+        - Times out after 5 seconds if Keychain doesn't respond
+    """
     try:
         result = subprocess.run(
             ['security', 'find-generic-password', '-s', 'Antigravity Safe Storage',
@@ -140,7 +217,36 @@ def get_key_from_keychain() -> Optional[bytes]:
 
 
 def get_key_from_env() -> Optional[bytes]:
-    """Get key from ANTIGRAVITY_KEY environment variable."""
+    """
+    Retrieve encryption key from ANTIGRAVITY_KEY environment variable.
+    
+    Reads the base64-encoded encryption key from the environment variable
+    and decodes it to raw bytes. This method works on all platforms and
+    is useful for automation and CI/CD pipelines.
+    
+    Returns:
+        16-byte AES encryption key, or None if:
+            - Environment variable not set
+            - Key is not valid base64
+            - Key is not 16 bytes after decoding
+            
+    Example:
+        >>> import os
+        >>> os.environ['ANTIGRAVITY_KEY'] = 'qFl7rbZfqbZoahxeyCwdCg=='
+        >>> key = get_key_from_env()
+        >>> if key:
+        ...     print(f"Key retrieved: {len(key)} bytes")
+        
+    Usage in Shell:
+        export ANTIGRAVITY_KEY="qFl7rbZfqbZoahxeyCwdCg=="
+        python antigravity_decrypt.py conversation.pb
+        
+    Note:
+        - Key must be base64 encoded (e.g., "qFl7rbZfqbZoahxeyCwdCg==")
+        - Works on all platforms (macOS, Linux, Windows)
+        - Suitable for automation and scripts
+        - Remember to keep the key secure and never commit it to version control
+    """
     key_b64 = os.environ.get('ANTIGRAVITY_KEY')
     if key_b64:
         try:
@@ -195,7 +301,44 @@ def decode_wire_field(data: bytes, pos: int, wire_type: int) -> Tuple[Any, int]:
 
 
 def parse_protobuf_wire_format(data: bytes, max_depth: int = 10, depth: int = 0) -> List[Dict[str, Any]]:
-    """Parse protobuf wire format and extract field information."""
+    """
+    Parse Protocol Buffer wire format without requiring a schema.
+    
+    This function decodes protobuf binary data by parsing the wire format directly.
+    It handles all standard wire types (varint, fixed64, length-delimited, fixed32)
+    and recursively parses nested messages. Strings are automatically decoded as UTF-8.
+    
+    Args:
+        data: Raw protobuf binary data (after decryption)
+        max_depth: Maximum recursion depth for nested messages (default: 10)
+        depth: Current recursion depth (internal use, default: 0)
+        
+    Returns:
+        List of field dictionaries, each containing:
+            - 'field_number': Protobuf field number (int)
+            - 'wire_type': Wire type code 0-5 (int)
+            - 'wire_type_name': Human-readable wire type name (str)
+            - 'value': Interpreted field value (varies by type)
+            
+    Example:
+        >>> decrypted = decrypt_file("conversation.pb", key)
+        >>> fields = parse_protobuf_wire_format(decrypted)
+        >>> print(f"Found {len(fields)} top-level fields")
+        >>> for field in fields:
+        ...     print(f"Field {field['field_number']}: {field['wire_type_name']}")
+        
+    Wire Types:
+        0: Varint (int, bool, enum)
+        1: Fixed64 (double, fixed64)
+        2: Length-delimited (string, bytes, nested message)
+        5: Fixed32 (float, fixed32)
+        
+    Note:
+        - No .proto schema file required
+        - Automatically decodes UTF-8 strings
+        - Recursively parses nested messages
+        - Handles malformed data gracefully
+    """
     if depth > max_depth:
         return []
     
@@ -344,8 +487,32 @@ def is_valid_protobuf(data: bytes, min_fields: int = 1) -> bool:
 
 def decrypt_file(file_path: str, key: bytes, verbose: bool = False) -> Optional[bytes]:
     """
-    Decrypt an encrypted .pb file.
-    Tries multiple encryption methods and skip amounts for resilience.
+    Decrypt an encrypted Antigravity conversation file.
+    
+    This function automatically tries multiple decryption methods (AES-CTR, AES-CBC, AES-GCM)
+    and various skip amounts to handle different file format variations. It validates the
+    decrypted data by attempting to parse it as protobuf or checking for readable text.
+    
+    Args:
+        file_path: Path to the encrypted .pb file
+        key: 16-byte AES encryption key (raw bytes, not base64)
+        verbose: If True, prints detailed decryption progress to stderr
+        
+    Returns:
+        Decrypted protobuf data as bytes, or None if decryption failed
+        
+    Example:
+        >>> import base64
+        >>> key = base64.b64decode("qFl7rbZfqbZoahxeyCwdCg==")
+        >>> decrypted = decrypt_file("conversation.pb", key)
+        >>> if decrypted:
+        ...     print(f"Decrypted {len(decrypted)} bytes")
+        
+    Note:
+        This function is resilient to various file format variations:
+        - Header bytes (0-8 bytes before encrypted data)
+        - Post-decryption alignment (0-8 bytes to skip)
+        - Multiple encryption modes
     """
     with open(file_path, 'rb') as f:
         encrypted_data = f.read()
@@ -426,7 +593,32 @@ def extract_text_from_fields(fields: List[Dict], max_length: int = 10000) -> Lis
 
 
 def extract_conversation_messages(fields: List[Dict]) -> List[Dict[str, Any]]:
-    """Extract conversation messages from protobuf structure."""
+    """
+    Extract human-readable conversation messages from parsed protobuf fields.
+    
+    This function recursively searches through the protobuf field structure to find
+    UTF-8 encoded strings that appear to be conversation messages. It filters out
+    short strings, binary data, and non-conversational text.
+    
+    Args:
+        fields: List of parsed protobuf field dictionaries from parse_protobuf_wire_format()
+        
+    Returns:
+        List of message dictionaries, each containing:
+            - 'content': The full message text (str)
+            - 'length': Character count (int)
+            
+    Example:
+        >>> fields = parse_protobuf_wire_format(decrypted_data)
+        >>> messages = extract_conversation_messages(fields)
+        >>> for msg in messages:
+        ...     print(f"Message ({msg['length']} chars): {msg['content'][:50]}...")
+        
+    Note:
+        - Skips strings shorter than 10 characters
+        - Filters out binary-looking data
+        - Preserves message order from the protobuf structure
+    """
     messages = []
     texts = extract_text_from_fields(fields)
     
@@ -453,7 +645,62 @@ def extract_conversation_messages(fields: List[Dict]) -> List[Dict[str, Any]]:
 # ============================================================================
 
 def process_conversation_file(file_path: str, key: bytes, verbose: bool = False) -> Dict[str, Any]:
-    """Process a single conversation file and extract readable content."""
+    """
+    High-level function to decrypt and process a conversation file in one call.
+    
+    This is the recommended function for most use cases. It handles the complete
+    workflow: decryption, protobuf parsing, and message extraction. Returns a
+    comprehensive result dictionary with all extracted data and metadata.
+    
+    Args:
+        file_path: Path to the .pb conversation file
+        key: 16-byte AES encryption key (raw bytes, not base64)
+        verbose: If True, prints detailed progress to stderr
+        
+    Returns:
+        Dictionary containing:
+            - 'file': Filename (str)
+            - 'path': Full file path (str)
+            - 'success': Whether processing succeeded (bool)
+            - 'error': Error message if failed, else None (str or None)
+            - 'messages': List of extracted messages (list of dict)
+            - 'metadata': File and processing metadata (dict)
+            
+    Example:
+        >>> import base64
+        >>> key = base64.b64decode("qFl7rbZfqbZoahxeyCwdCg==")
+        >>> result = process_conversation_file("conversation.pb", key)
+        >>> if result['success']:
+        ...     print(f"Found {len(result['messages'])} messages")
+        ...     for msg in result['messages']:
+        ...         print(f"- {msg['content'][:50]}...")
+        ... else:
+        ...     print(f"Error: {result['error']}")
+        
+    Result Structure:
+        {
+            'file': 'conversation.pb',
+            'path': '/full/path/conversation.pb',
+            'success': True,
+            'error': None,
+            'messages': [
+                {'content': 'Message text...', 'length': 123},
+                ...
+            ],
+            'metadata': {
+                'size': 172850,              # Original file size
+                'modified': 1702995234.5,    # Last modified timestamp
+                'decrypted_size': 172832,    # Decrypted data size
+                'field_count': 4,            # Number of protobuf fields
+                'message_count': 15          # Number of messages extracted
+            }
+        }
+        
+    Note:
+        - Automatically handles all decryption methods
+        - Gracefully handles errors (check 'success' field)
+        - Use with verbose=True for debugging
+    """
     result = {
         "file": os.path.basename(file_path),
         "path": file_path,
