@@ -13,7 +13,7 @@ const path = require('path');
 // Example 1: Decrypt a single file with a known key
 function example1() {
   console.log('Example 1: Decrypt a single file');
-  console.log('=' .repeat(50));
+  console.log('='.repeat(50));
   
   // Your base64-encoded encryption key
   const keyB64 = process.env.ANTIGRAVITY_KEY || 'qFl7rbZfqbZoahxeyCwdCg==';
@@ -61,7 +61,7 @@ function example1() {
 // Example 2: Process a file and get structured result
 function example2() {
   console.log('Example 2: Process file with full result');
-  console.log('=' .repeat(50));
+  console.log('='.repeat(50));
   
   const keyB64 = process.env.ANTIGRAVITY_KEY || 'qFl7rbZfqbZoahxeyCwdCg==';
   const key = Buffer.from(keyB64, 'base64');
@@ -101,7 +101,7 @@ function example2() {
 // Example 3: Batch process multiple files
 function example3() {
   console.log('Example 3: Batch process directory');
-  console.log('=' .repeat(50));
+  console.log('='.repeat(50));
   
   const keyB64 = process.env.ANTIGRAVITY_KEY || 'qFl7rbZfqbZoahxeyCwdCg==';
   const key = Buffer.from(keyB64, 'base64');
@@ -170,7 +170,7 @@ function example3() {
 // Example 4: Custom key from different sources
 function example4() {
   console.log('Example 4: Key management');
-  console.log('=' .repeat(50));
+  console.log('='.repeat(50));
   
   // Method 1: From environment variable
   if (process.env.ANTIGRAVITY_KEY) {

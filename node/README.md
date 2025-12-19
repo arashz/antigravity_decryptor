@@ -60,10 +60,10 @@ antigravity-decrypt --help
 
 ### Option 3: Direct Execution
 
-Node.js has the `crypto` module built-in, so the only dependency is `protobufjs` (which is optional):
+Node.js has all required modules built-in, so no dependencies are needed:
 
 ```bash
-# Without installing
+# Run directly without any installation
 node antigravity-decrypt.js conversation.pb --key "YOUR_KEY"
 ```
 

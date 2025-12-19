@@ -23,23 +23,17 @@ ANTIGRAVITY_KEY="qFl7rbZfqbZoahxeyCwdCg==" node examples/basic-usage.js
 ## Requirements
 
 All examples require:
-- Node.js 14+
-- Dependencies installed (`npm install` in the parent directory)
+- Node.js 14+ (no external dependencies needed)
 - Valid encryption key (via environment variable or command-line)
 
 ## Getting Started
 
-1. Install dependencies:
-```bash
-cd .. && npm install
-```
-
-2. Set your encryption key:
+1. Set your encryption key:
 ```bash
 export ANTIGRAVITY_KEY="your_base64_key_here"
 ```
 
-3. Run an example:
+2. Run an example:
 ```bash
 node examples/basic-usage.js
 ```
@@ -140,8 +134,8 @@ class DecryptTransform extends Transform {
 ## Troubleshooting
 
 **Example script fails with "Cannot find module"**
-- Make sure you're in the `node` directory
-- Run `npm install` to install dependencies
+- Make sure you're in the `node` directory when running examples
+- The script uses relative paths to import the main module
 
 **"No .pb files found"**
 - Examples look for files in expected locations
