@@ -5,6 +5,11 @@ Example: Batch Processing with Python API
 
 This example shows how to use the Antigravity Decryptor programmatically
 to batch process multiple conversation files.
+
+⚠️ SECURITY NOTE: This example contains placeholder keys marked as 
+"YOUR_KEY_HERE_REPLACE_ME". Always replace these with your actual key
+or use environment variables in production. Never commit real keys to 
+version control!
 """
 
 import sys
@@ -29,8 +34,13 @@ def batch_process_example():
     """Example of batch processing conversation files."""
     
     # Your encryption key (base64 encoded)
-    # Replace with your actual key or get from environment
-    key_b64 = "qFl7rbZfqbZoahxeyCwdCg=="  # Example key
+    # ⚠️ WARNING: Replace with your actual key! This is just a placeholder example.
+    # Get your key from environment variable or Keychain in production.
+    key_b64 = "YOUR_KEY_HERE_REPLACE_ME"  # ← Replace this!
+    
+    # In production, use environment variable:
+    # key_b64 = os.environ.get('ANTIGRAVITY_KEY')
+    
     key = base64.b64decode(key_b64)
     
     # Directory containing .pb files
@@ -81,8 +91,13 @@ def batch_process_example():
 def single_file_example():
     """Example of processing a single file with custom logic."""
     
-    # Your encryption key
-    key_b64 = "qFl7rbZfqbZoahxeyCwdCg=="  # Example key
+    # Your encryption key (base64 encoded)
+    # ⚠️ WARNING: Replace with your actual key! This is just a placeholder example.
+    key_b64 = "YOUR_KEY_HERE_REPLACE_ME"  # ← Replace this!
+    
+    # In production, use environment variable:
+    # key_b64 = os.environ.get('ANTIGRAVITY_KEY')
+    
     key = base64.b64decode(key_b64)
     
     # File to decrypt

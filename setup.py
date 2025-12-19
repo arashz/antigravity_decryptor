@@ -8,9 +8,11 @@ import os
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-# Read requirements
-with open("requirements.txt", "r", encoding="utf-8") as fh:
-    requirements = [line.strip() for line in fh if line.strip() and not line.startswith("#")]
+# Dependencies - keep in sync with pyproject.toml
+requirements = [
+    "cryptography>=41.0.0",
+    "protobuf>=4.24.0",
+]
 
 setup(
     name="antigravity-decryptor",
@@ -20,6 +22,11 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/arashz/antigravity_decryptor",
+    project_urls={
+        "Homepage": "https://github.com/arashz/antigravity_decryptor",
+        "Repository": "https://github.com/arashz/antigravity_decryptor",
+        "Issues": "https://github.com/arashz/antigravity_decryptor/issues",
+    },
     py_modules=["antigravity_decrypt"],
     install_requires=requirements,
     python_requires=">=3.6",
