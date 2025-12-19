@@ -23,7 +23,7 @@ ANTIGRAVITY_KEY="qFl7rbZfqbZoahxeyCwdCg==" node examples/basic-usage.js
 ## Requirements
 
 All examples require:
-- Node.js 14+ (no external dependencies needed)
+- Node.js 16+ (no external dependencies needed)
 - Valid encryption key (via environment variable or command-line)
 
 ## Getting Started

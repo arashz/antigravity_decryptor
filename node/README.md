@@ -266,7 +266,7 @@ node antigravity-decrypt.js conversations/ --output decrypted/
 
 ## Requirements
 
-- Node.js 14.0.0 or higher
+- Node.js 16.0.0 or higher
 - No external dependencies required (uses built-in Node.js crypto module)
 
 ## Comparison with Python Version
@@ -278,7 +278,7 @@ Both versions provide the same functionality. Choose based on your preference:
 | Installation | `pip install -e .` | No installation needed |
 | Dependencies | cryptography, protobuf | None (built-in only) |
 | Performance | Fast | Fast |
-| Platform Support | Python 3.6+ | Node.js 14+ |
+| Platform Support | Python 3.6+ | Node.js 16+ |
 | CLI Features | ✅ All features | ✅ All features |
 
 ## Author

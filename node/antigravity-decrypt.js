@@ -12,7 +12,7 @@
  *     node antigravity-decrypt.js <directory> [--output <output_dir>] [--key <key>]
  * 
  * Requirements:
- *     Node.js 14.0.0 or higher (no external dependencies required)
+ *     Node.js 16.0.0 or higher (no external dependencies required)
  * 
  * Author: Arash Zolfaghari
  */
@@ -23,6 +23,10 @@ const crypto = require('crypto');
 const { execSync } = require('child_process');
 
 const VERSION = '1.1.0';
+
+// Configuration constants
+const MAX_PROTOBUF_ITERATIONS = 100000;
+const PROTOBUF_TEST_SIZE = 5000;
 
 // ============================================================================
 // UI/UX Utilities
@@ -177,10 +181,9 @@ function parseProtobufWireFormat(data, maxDepth = 10, depth = 0) {
 
   const fields = [];
   let pos = 0;
-  const maxIterations = 100000;
   let iteration = 0;
 
-  while (pos < data.length && iteration < maxIterations) {
+  while (pos < data.length && iteration < MAX_PROTOBUF_ITERATIONS) {
     iteration++;
     try {
       const { value: tag, pos: newPos } = decodeVarint(data, pos);
@@ -314,7 +317,7 @@ function decryptAesGcm(data, key, skipBytes = 0) {
 
 function isValidProtobuf(data, minFields = 1) {
   try {
-    const testData = data.slice(0, Math.min(5000, data.length));
+    const testData = data.slice(0, Math.min(PROTOBUF_TEST_SIZE, data.length));
     const fields = parseProtobufWireFormat(testData);
     if (!fields || fields.length === 0) return false;
     const validFields = fields.filter(f => f && f.field_number !== undefined);
