@@ -12,7 +12,7 @@
  *     node antigravity-decrypt.js <directory> [--output <output_dir>] [--key <key>]
  * 
  * Requirements:
- *     npm install protobufjs
+ *     Node.js 14.0.0 or higher (no external dependencies required)
  * 
  * Author: Arash Zolfaghari
  */

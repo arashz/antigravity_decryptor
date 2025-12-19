@@ -193,9 +193,7 @@ cat ./decrypted/summary.json | jq '.files[] | select(.success) | {file: .file, m
 
 See the `examples/` directory for complete examples:
 
-- **`basic-usage.js`**: Programmatic usage examples
-- **`batch-process.js`**: Batch processing with Node.js API
-- **`analyze-conversations.js`**: Advanced conversation analysis
+- **`basic-usage.js`**: Programmatic usage examples demonstrating single file processing, batch operations, and key management
 
 ## Integration into Other Projects
 
@@ -269,7 +267,7 @@ node antigravity-decrypt.js conversations/ --output decrypted/
 ## Requirements
 
 - Node.js 14.0.0 or higher
-- Dependencies: `protobufjs` (optional, for enhanced protobuf support)
+- No external dependencies required (uses built-in Node.js crypto module)
 
 ## Comparison with Python Version
 
@@ -277,8 +275,8 @@ Both versions provide the same functionality. Choose based on your preference:
 
 | Feature | Python Version | Node.js Version |
 |---------|---------------|-----------------|
-| Installation | `pip install -e .` | `npm install` |
-| Dependencies | cryptography, protobuf | Built-in crypto, protobufjs |
+| Installation | `pip install -e .` | No installation needed |
+| Dependencies | cryptography, protobuf | None (built-in only) |
 | Performance | Fast | Fast |
 | Platform Support | Python 3.6+ | Node.js 14+ |
 | CLI Features | ✅ All features | ✅ All features |

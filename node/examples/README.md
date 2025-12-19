@@ -4,7 +4,7 @@ This directory contains practical examples of using the Antigravity Decryptor wi
 
 ## Available Examples
 
-### 1. basic-usage.js
+### basic-usage.js
 
 Demonstrates how to use the decryptor module programmatically:
 - Decrypt a single file
@@ -18,38 +18,6 @@ node examples/basic-usage.js
 
 # With custom key
 ANTIGRAVITY_KEY="qFl7rbZfqbZoahxeyCwdCg==" node examples/basic-usage.js
-```
-
-### 2. batch-process.js
-
-Advanced batch processing with:
-- Progress tracking
-- Error handling and retry logic
-- Parallel processing
-- Summary statistics
-
-```bash
-# Process a directory
-node examples/batch-process.js ./conversations ./output
-
-# With verbose output
-node examples/batch-process.js ./conversations ./output --verbose
-```
-
-### 3. analyze-conversations.js
-
-Analyze decrypted conversations:
-- Count messages and characters
-- Search for keywords
-- Generate statistics
-- Export analysis reports
-
-```bash
-# Analyze conversations
-node examples/analyze-conversations.js ./decrypted --output report.json
-
-# Search for specific terms
-node examples/analyze-conversations.js ./decrypted --search "error" --output search_results.json
 ```
 
 ## Requirements

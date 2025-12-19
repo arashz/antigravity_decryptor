@@ -21,9 +21,7 @@
   ],
   "author": "Arash Zolfaghari",
   "license": "MIT",
-  "dependencies": {
-    "protobufjs": "^7.2.5"
-  },
+  "dependencies": {},
   "engines": {
     "node": ">=14.0.0"
   },
