@@ -38,8 +38,8 @@ You might want to:
 ### Is this legal and safe to use?
 
 **Yes!** This tool:
-- ✅ Only works on YOUR OWN files
-- ✅ Uses YOUR OWN encryption key
+- ✅ Only works on your own files
+- ✅ Uses your own encryption key
 - ✅ Runs locally on your machine
 - ✅ Doesn't send data anywhere
 
