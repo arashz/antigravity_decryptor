@@ -1,0 +1,37 @@
+{
+  "name": "antigravity-decryptor",
+  "version": "1.1.0",
+  "description": "A portable Node.js tool to decrypt and extract conversations from Antigravity IDE's encrypted files",
+  "main": "antigravity-decrypt.js",
+  "bin": {
+    "antigravity-decrypt": "./antigravity-decrypt.js"
+  },
+  "scripts": {
+    "test": "node antigravity-decrypt.js --help"
+  },
+  "keywords": [
+    "antigravity",
+    "ide",
+    "decrypt",
+    "conversation",
+    "protobuf",
+    "encryption",
+    "aes",
+    "ctr"
+  ],
+  "author": "Arash Zolfaghari",
+  "license": "MIT",
+  "dependencies": {},
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arashz/antigravity_decryptor.git",
+    "directory": "node"
+  },
+  "homepage": "https://github.com/arashz/antigravity_decryptor#readme",
+  "bugs": {
+    "url": "https://github.com/arashz/antigravity_decryptor/issues"
+  }
+}
