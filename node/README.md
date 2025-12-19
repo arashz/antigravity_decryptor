@@ -1,97 +1,70 @@
-# Antigravity Decryptor
+# Antigravity Decryptor (Node.js Version)
 
-A standalone, portable tool to decrypt and extract human-readable conversations from Antigravity IDE's encrypted `.pb` conversation files.
+A standalone, portable Node.js tool to decrypt and extract human-readable conversations from Antigravity IDE's encrypted `.pb` conversation files.
 
-> 🚀 **New user?** Check out the [Quick Start Guide](QUICKSTART.md) to get started in 2 minutes!
-
-## Available Versions
-
-This tool is available in two versions:
-
-- **[Python Version](antigravity_decrypt.py)** (this directory) - Full-featured Python implementation
-- **[Node.js Version](node/)** - JavaScript/Node.js implementation with identical features
-
-Both versions provide the same functionality. Choose based on your preference or environment!
+This is the Node.js version of the [Python Antigravity Decryptor](../README.md). Both versions provide the same functionality.
 
 ## Quick Start
 
-### Python Version
-
 ```bash
-# Install as a package (recommended)
-pip install -e .
-
-# Decrypt a conversation file
-python antigravity_decrypt.py conversation.pb --output conversation.json
-
-# Interactive mode (great for beginners!)
-python antigravity_decrypt.py --interactive
-
-# Decrypt all files in a directory with progress tracking
-python antigravity_decrypt.py ./conversations --output ./decrypted
-```
-
-### Node.js Version
-
-```bash
-# Navigate to Node.js directory
-cd node
-
 # Install dependencies
 npm install
 
 # Decrypt a conversation file
 node antigravity-decrypt.js conversation.pb --output conversation.json
 
-# Interactive mode
+# Interactive mode (great for beginners!)
 node antigravity-decrypt.js --interactive
-```
 
-See the [Node.js README](node/README.md) for complete documentation.
+# Decrypt all files in a directory with progress tracking
+node antigravity-decrypt.js ./conversations --output ./decrypted
+```
 
 ## Features
 
-- ✅ **Standalone**: Single script, no external dependencies beyond standard libraries
-- ✅ **Portable**: Works on any system with Python 3.6+
+- ✅ **Standalone**: Single script, minimal dependencies
+- ✅ **Portable**: Works on any system with Node.js 14+
 - ✅ **Multiple key sources**: Keychain (macOS), environment variable, or command-line argument
 - ✅ **Batch processing**: Process single files or entire directories with progress tracking
 - ✅ **Multiple output formats**: JSON or human-readable text
 - ✅ **Automatic extraction**: Extracts conversation messages from protobuf structure
 - ✨ **Interactive mode**: Step-by-step prompts for beginners
 - ✨ **Beautiful CLI**: Colored output, progress bars, and helpful error messages
-- ✨ **Pip installable**: Install as a package with `pip install`
-- ✨ **Rich examples**: Practical examples for common use cases
+- ✨ **NPM installable**: Install globally or use locally
 
 ## Installation
 
-### Option 1: Install as a Package (Recommended)
+### Option 1: Local Installation
 
 ```bash
-# Clone the repository
+# Clone the repository (if not already)
 git clone https://github.com/arashz/antigravity_decryptor.git
-cd antigravity_decryptor
+cd antigravity_decryptor/node
 
-# Install in editable mode
-pip install -e .
+# Install dependencies
+npm install
+
+# Use the script
+node antigravity-decrypt.js --help
+```
+
+### Option 2: Global Installation
+
+```bash
+cd antigravity_decryptor/node
+npm install -g .
 
 # Now you can use it anywhere!
 antigravity-decrypt --help
 ```
 
-### Option 2: Direct Script Usage
+### Option 3: Direct Execution
+
+Node.js has the `crypto` module built-in, so the only dependency is `protobufjs` (which is optional):
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Use the script directly
-python antigravity_decrypt.py --help
-```
-
-### Option 3: Dependencies Only
-
-```bash
-pip install cryptography protobuf
+# Without installing
+node antigravity-decrypt.js conversation.pb --key "YOUR_KEY"
 ```
 
 ## Usage
@@ -102,10 +75,10 @@ Perfect for first-time users:
 
 ```bash
 # Launch interactive mode with step-by-step prompts
-python antigravity_decrypt.py --interactive
+node antigravity-decrypt.js --interactive
 
 # Or just run without arguments
-python antigravity_decrypt.py
+node antigravity-decrypt.js
 ```
 
 The interactive mode will guide you through:
@@ -118,19 +91,19 @@ The interactive mode will guide you through:
 
 ```bash
 # Decrypt a single file (outputs to stdout as JSON)
-python antigravity_decrypt.py conversation.pb
+node antigravity-decrypt.js conversation.pb
 
 # Decrypt and save to file
-python antigravity_decrypt.py conversation.pb --output conversation.json
+node antigravity-decrypt.js conversation.pb --output conversation.json
 
 # Decrypt as human-readable text
-python antigravity_decrypt.py conversation.pb --format text --output conversation.txt
+node antigravity-decrypt.js conversation.pb --format text --output conversation.txt
 
 # Decrypt all files in a directory (with progress bar!)
-python antigravity_decrypt.py ./conversations --output ./decrypted
+node antigravity-decrypt.js ./conversations --output ./decrypted
 
 # Show version
-python antigravity_decrypt.py --version
+node antigravity-decrypt.js --version
 ```
 
 ### Key Management
@@ -139,13 +112,13 @@ The script tries to get the encryption key in this order:
 
 1. **Command-line argument** (highest priority):
    ```bash
-   python antigravity_decrypt.py conversation.pb --key "qFl7rbZfqbZoahxeyCwdCg=="
+   node antigravity-decrypt.js conversation.pb --key "qFl7rbZfqbZoahxeyCwdCg=="
    ```
 
 2. **Environment variable**:
    ```bash
    export ANTIGRAVITY_KEY="qFl7rbZfqbZoahxeyCwdCg=="
-   python antigravity_decrypt.py conversation.pb
+   node antigravity-decrypt.js conversation.pb
    ```
 
 3. **macOS Keychain** (automatic on macOS):
@@ -197,75 +170,61 @@ Another message...
 
 ```bash
 # On macOS (keychain access)
-python antigravity_decrypt.py ~/.gemini/antigravity/conversations/ --output ./my_conversations
+node antigravity-decrypt.js ~/.gemini/antigravity/conversations/ --output ./my_conversations
 
 # On other systems (with key)
-python antigravity_decrypt.py conversations/ --key "YOUR_KEY_HERE" --output ./decrypted
+node antigravity-decrypt.js conversations/ --key "YOUR_KEY_HERE" --output ./decrypted
 
 # With verbose output for debugging
-python antigravity_decrypt.py conversations/ --verbose
+node antigravity-decrypt.js conversations/ --verbose
 ```
 
 ### Process and analyze
 
 ```bash
 # Get all conversations as JSON with progress tracking
-python antigravity_decrypt.py conversations/ --output ./decrypted --format json
+node antigravity-decrypt.js conversations/ --output ./decrypted --format json
 
 # Then analyze with jq
 cat ./decrypted/summary.json | jq '.files[] | select(.success) | {file: .file, messages: .metadata.message_count}'
 ```
 
-### Practical Examples
+### Example Scripts
 
-Check out the `examples/` directory for complete, ready-to-use examples:
+See the `examples/` directory for complete examples:
 
-- **`basic_usage.sh`**: Quick reference for common commands
-- **`batch_process.py`**: Programmatic batch processing with Python API
-- **`analyze_conversations.py`**: Advanced analysis with statistics and search
-
-```bash
-# View available examples
-ls examples/
-
-# Run the analysis example
-python examples/analyze_conversations.py --input ./conversations --output report.json
-```
-
-See `examples/README.md` for detailed information about each example.
+- **`basic-usage.js`**: Programmatic usage examples
+- **`batch-process.js`**: Batch processing with Node.js API
+- **`analyze-conversations.js`**: Advanced conversation analysis
 
 ## Integration into Other Projects
 
-### As a Python Module
+### As a Node.js Module
 
-```python
-from antigravity_decrypt import decrypt_file, extract_conversation_messages, parse_protobuf_wire_format
-import base64
+```javascript
+const { decryptFile, processConversationFile, extractConversationMessages } = require('./antigravity-decrypt');
 
-# Get key
-key = base64.b64decode("qFl7rbZfqbZoahxeyCwdCg==")
+// Get key
+const key = Buffer.from('qFl7rbZfqbZoahxeyCwdCg==', 'base64');
 
-# Decrypt
-decrypted = decrypt_file("conversation.pb", key)
+// Decrypt and process
+const result = processConversationFile('conversation.pb', key);
 
-# Parse
-fields = parse_protobuf_wire_format(decrypted)
-
-# Extract messages
-messages = extract_conversation_messages(fields)
-
-for msg in messages:
-    print(msg['content'])
+if (result.success) {
+  result.messages.forEach(msg => {
+    console.log(msg.content);
+  });
+}
 ```
 
 ### As a Command-Line Tool
 
-Simply copy `antigravity_decrypt.py` to your project and use it:
+Simply copy `antigravity-decrypt.js` to your project and use it:
 
 ```bash
-cp antigravity_decrypt.py /path/to/your/project/
+cp antigravity-decrypt.js /path/to/your/project/
 cd /path/to/your/project/
-python antigravity_decrypt.py conversations/ --output decrypted/
+node antigravity-decrypt.js conversations/ --output decrypted/
 ```
 
 ## Technical Details
@@ -287,9 +246,7 @@ python antigravity_decrypt.py conversations/ --output decrypted/
 
 ## Troubleshooting
 
-Having issues? Check out the [comprehensive troubleshooting guide](TROUBLESHOOTING.md) for detailed solutions.
-
-### Quick Fixes
+### Common Issues
 
 **"Could not retrieve encryption key"**
 - Provide key via `--key` argument or `ANTIGRAVITY_KEY` environment variable
@@ -303,14 +260,28 @@ Having issues? Check out the [comprehensive troubleshooting guide](TROUBLESHOOTI
 **"Could not parse protobuf"**
 - File may be corrupted
 - File may use a different encryption method (unlikely)
-- Try decrypting with different skip amounts manually
 
 **"No .pb files found"**
 - Check directory path is correct
 - Verify files have `.pb` extension
 - Use absolute paths if needed
 
-For more help, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md) or open an issue on GitHub.
+## Requirements
+
+- Node.js 14.0.0 or higher
+- Dependencies: `protobufjs` (optional, for enhanced protobuf support)
+
+## Comparison with Python Version
+
+Both versions provide the same functionality. Choose based on your preference:
+
+| Feature | Python Version | Node.js Version |
+|---------|---------------|-----------------|
+| Installation | `pip install -e .` | `npm install` |
+| Dependencies | cryptography, protobuf | Built-in crypto, protobufjs |
+| Performance | Fast | Fast |
+| Platform Support | Python 3.6+ | Node.js 14+ |
+| CLI Features | ✅ All features | ✅ All features |
 
 ## Author
 
@@ -319,4 +290,3 @@ Arash Zolfaghari
 ## License
 
 This script is provided as-is for educational and personal use. Use responsibly and in accordance with applicable laws and terms of service.
-
