@@ -4,6 +4,18 @@ A standalone, portable tool to decrypt and extract human-readable conversations 
 
 > 🚀 **New user?** Check out the [Quick Start Guide](QUICKSTART.md) to get started in 2 minutes!
 
+## 📚 Documentation
+
+| Guide | Description |
+|-------|-------------|
+| 🚀 [Quick Start](QUICKSTART.md) | Get started in 2 minutes |
+| 📖 [API Reference](API_REFERENCE.md) | Complete API documentation for developers |
+| 🔍 [Analyzing Conversations](ANALYZING_CONVERSATIONS.md) | Guide to understanding and analyzing your conversations |
+| 🔐 [Understanding the Format](UNDERSTANDING_THE_FORMAT.md) | Deep dive into file format and encryption |
+| ❓ [FAQ](FAQ.md) | Frequently asked questions |
+| 🐛 [Troubleshooting](TROUBLESHOOTING.md) | Common issues and solutions |
+| 🤝 [Contributing](CONTRIBUTING.md) | How to contribute to the project |
+
 ## Quick Start
 
 ```bash
@@ -259,7 +271,20 @@ python antigravity_decrypt.py conversations/ --output decrypted/
 - Recursively extracts nested messages
 - Automatically detects and decodes UTF-8 strings
 
-## Troubleshooting
+## Need Help?
+
+### 📚 Comprehensive Documentation
+
+We've created extensive guides to help you:
+
+- **🚀 [Quick Start Guide](QUICKSTART.md)** - Get up and running in 2 minutes
+- **📖 [API Reference](API_REFERENCE.md)** - Complete Python API documentation with examples
+- **🔍 [Analyzing Conversations](ANALYZING_CONVERSATIONS.md)** - Learn how to extract insights from your conversations
+- **🔐 [Understanding the Format](UNDERSTANDING_THE_FORMAT.md)** - Technical deep-dive into encryption and file structure
+- **❓ [FAQ](FAQ.md)** - Answers to frequently asked questions
+- **🐛 [Troubleshooting Guide](TROUBLESHOOTING.md)** - Detailed solutions to common issues
+
+### Troubleshooting
 
 Having issues? Check out the [comprehensive troubleshooting guide](TROUBLESHOOTING.md) for detailed solutions.
 

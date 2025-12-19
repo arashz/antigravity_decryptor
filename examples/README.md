@@ -1,6 +1,8 @@
-# Antigravity Decryptor - Examples
+# 💡 Antigravity Decryptor - Examples
 
-This directory contains practical examples for using the Antigravity Decryptor.
+Practical, ready-to-use examples for decrypting and analyzing your Antigravity IDE conversations.
+
+> 💡 **Tip:** All examples include detailed comments and can be used as templates for your own projects!
 
 ## 📁 Files
 
@@ -83,6 +85,14 @@ for msg in messages:
 
 ## 📚 Additional Resources
 
+### Documentation
+- 📖 [API Reference](../API_REFERENCE.md) - Complete API documentation
+- 🔍 [Analyzing Conversations](../ANALYZING_CONVERSATIONS.md) - Analysis patterns and techniques
+- 🚀 [Quick Start](../QUICKSTART.md) - Get started in 2 minutes
+- ❓ [FAQ](../FAQ.md) - Frequently asked questions
+- 🐛 [Troubleshooting](../TROUBLESHOOTING.md) - Common issues and solutions
+
+### Project
 - **Main README**: See `../README.md` for comprehensive documentation
 - **Installation**: `pip install antigravity-decryptor` or use directly
 - **GitHub**: https://github.com/arashz/antigravity_decryptor
