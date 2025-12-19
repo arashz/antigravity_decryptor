@@ -2,16 +2,24 @@
 
 A standalone, portable tool to decrypt and extract human-readable conversations from Antigravity IDE's encrypted `.pb` conversation files.
 
+> 🚀 **New user?** Check out the [Quick Start Guide](QUICKSTART.md) to get started in 2 minutes!
+
 ## Quick Start
 
 ```bash
-# Install dependencies
+# Option 1: Install as a package (recommended)
+pip install -e .
+
+# Option 2: Install dependencies only
 pip install -r requirements.txt
 
 # Decrypt a conversation file
 python antigravity_decrypt.py conversation.pb --output conversation.json
 
-# Decrypt all files in a directory
+# Interactive mode (great for beginners!)
+python antigravity_decrypt.py --interactive
+
+# Decrypt all files in a directory with progress tracking
 python antigravity_decrypt.py ./conversations --output ./decrypted
 ```
 
@@ -20,17 +28,65 @@ python antigravity_decrypt.py ./conversations --output ./decrypted
 - ✅ **Standalone**: Single script, no external dependencies beyond standard libraries
 - ✅ **Portable**: Works on any system with Python 3.6+
 - ✅ **Multiple key sources**: Keychain (macOS), environment variable, or command-line argument
-- ✅ **Batch processing**: Process single files or entire directories
+- ✅ **Batch processing**: Process single files or entire directories with progress tracking
 - ✅ **Multiple output formats**: JSON or human-readable text
 - ✅ **Automatic extraction**: Extracts conversation messages from protobuf structure
+- ✨ **Interactive mode**: Step-by-step prompts for beginners
+- ✨ **Beautiful CLI**: Colored output, progress bars, and helpful error messages
+- ✨ **Pip installable**: Install as a package with `pip install`
+- ✨ **Rich examples**: Practical examples for common use cases
 
 ## Installation
+
+### Option 1: Install as a Package (Recommended)
+
+```bash
+# Clone the repository
+git clone https://github.com/arashz/antigravity_decryptor.git
+cd antigravity_decryptor
+
+# Install in editable mode
+pip install -e .
+
+# Now you can use it anywhere!
+antigravity-decrypt --help
+```
+
+### Option 2: Direct Script Usage
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Use the script directly
+python antigravity_decrypt.py --help
+```
+
+### Option 3: Dependencies Only
 
 ```bash
 pip install cryptography protobuf
 ```
 
 ## Usage
+
+### Interactive Mode (Easiest!)
+
+Perfect for first-time users:
+
+```bash
+# Launch interactive mode with step-by-step prompts
+python antigravity_decrypt.py --interactive
+
+# Or just run without arguments
+python antigravity_decrypt.py
+```
+
+The interactive mode will guide you through:
+1. Selecting input file/directory
+2. Providing encryption key
+3. Choosing output location
+4. Selecting output format
 
 ### Basic Usage
 
@@ -44,8 +100,11 @@ python antigravity_decrypt.py conversation.pb --output conversation.json
 # Decrypt as human-readable text
 python antigravity_decrypt.py conversation.pb --format text --output conversation.txt
 
-# Decrypt all files in a directory
+# Decrypt all files in a directory (with progress bar!)
 python antigravity_decrypt.py ./conversations --output ./decrypted
+
+# Show version
+python antigravity_decrypt.py --version
 ```
 
 ### Key Management
@@ -116,17 +175,38 @@ python antigravity_decrypt.py ~/.gemini/antigravity/conversations/ --output ./my
 
 # On other systems (with key)
 python antigravity_decrypt.py conversations/ --key "YOUR_KEY_HERE" --output ./decrypted
+
+# With verbose output for debugging
+python antigravity_decrypt.py conversations/ --verbose
 ```
 
 ### Process and analyze
 
 ```bash
-# Get all conversations as JSON
+# Get all conversations as JSON with progress tracking
 python antigravity_decrypt.py conversations/ --output ./decrypted --format json
 
 # Then analyze with jq
 cat ./decrypted/summary.json | jq '.files[] | select(.success) | {file: .file, messages: .metadata.message_count}'
 ```
+
+### Practical Examples
+
+Check out the `examples/` directory for complete, ready-to-use examples:
+
+- **`basic_usage.sh`**: Quick reference for common commands
+- **`batch_process.py`**: Programmatic batch processing with Python API
+- **`analyze_conversations.py`**: Advanced analysis with statistics and search
+
+```bash
+# View available examples
+ls examples/
+
+# Run the analysis example
+python examples/analyze_conversations.py --input ./conversations --output report.json
+```
+
+See `examples/README.md` for detailed information about each example.
 
 ## Integration into Other Projects
 
@@ -181,19 +261,30 @@ python antigravity_decrypt.py conversations/ --output decrypted/
 
 ## Troubleshooting
 
-### "Could not retrieve encryption key"
+Having issues? Check out the [comprehensive troubleshooting guide](TROUBLESHOOTING.md) for detailed solutions.
+
+### Quick Fixes
+
+**"Could not retrieve encryption key"**
 - Provide key via `--key` argument or `ANTIGRAVITY_KEY` environment variable
 - On macOS, ensure keychain access is granted
 
-### "Decryption failed"
+**"Decryption failed"**
 - Verify the key is correct (base64 encoded)
 - Check that the file is actually an Antigravity conversation file
 - Try with `--verbose` flag for more details
 
-### "Could not parse protobuf"
+**"Could not parse protobuf"**
 - File may be corrupted
 - File may use a different encryption method (unlikely)
 - Try decrypting with different skip amounts manually
+
+**"No .pb files found"**
+- Check directory path is correct
+- Verify files have `.pb` extension
+- Use absolute paths if needed
+
+For more help, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md) or open an issue on GitHub.
 
 ## Author
 
