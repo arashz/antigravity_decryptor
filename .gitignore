@@ -2,6 +2,8 @@
 decrypted/
 decoded/
 *.json
+!package.json
+!tsconfig.json
 *.txt
 *.pb
 
