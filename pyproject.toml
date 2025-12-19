@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "antigravity-decryptor"
+version = "1.1.0"
+description = "A portable tool to decrypt and extract conversations from Antigravity IDE's encrypted files"
+readme = "README.md"
+authors = [{name = "Arash Zolfaghari"}]
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+keywords = ["antigravity", "ide", "decrypt", "conversation", "protobuf", "encryption"]
+requires-python = ">=3.6"
+dependencies = [
+    "cryptography>=41.0.0",
+    "protobuf>=4.24.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/arashz/antigravity_decryptor"
+Repository = "https://github.com/arashz/antigravity_decryptor"
+Issues = "https://github.com/arashz/antigravity_decryptor/issues"
+
+[project.scripts]
+antigravity-decrypt = "antigravity_decrypt:main"
+
+[tool.setuptools]
+py-modules = ["antigravity_decrypt"]

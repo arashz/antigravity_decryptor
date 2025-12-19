@@ -16,6 +16,8 @@ Requirements:
 Author: Arash Zolfaghari
 """
 
+__version__ = "1.1.0"
+
 import sys
 import os
 import json
@@ -25,6 +27,7 @@ import argparse
 from pathlib import Path
 from typing import Optional, Dict, Any, List, Tuple
 import struct
+import time
 
 try:
     from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
@@ -39,6 +42,80 @@ try:
 except ImportError:
     print("Error: protobuf library required. Install with: pip install protobuf")
     sys.exit(1)
+
+
+# ============================================================================
+# UI/UX Utilities
+# ============================================================================
+
+class Colors:
+    """ANSI color codes for terminal output."""
+    RESET = '\033[0m'
+    BOLD = '\033[1m'
+    DIM = '\033[2m'
+    RED = '\033[91m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    BLUE = '\033[94m'
+    MAGENTA = '\033[95m'
+    CYAN = '\033[96m'
+    
+    @staticmethod
+    def is_supported():
+        """Check if terminal supports colors."""
+        return hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()
+    
+    @classmethod
+    def disable(cls):
+        """Disable colors for non-TTY environments."""
+        cls.RESET = cls.BOLD = cls.DIM = ''
+        cls.RED = cls.GREEN = cls.YELLOW = ''
+        cls.BLUE = cls.MAGENTA = cls.CYAN = ''
+
+
+# Auto-detect color support
+if not Colors.is_supported():
+    Colors.disable()
+
+
+def print_success(message: str):
+    """Print success message with color."""
+    print(f"{Colors.GREEN}✓{Colors.RESET} {message}")
+
+
+def print_error(message: str):
+    """Print error message with color."""
+    print(f"{Colors.RED}✗{Colors.RESET} {message}", file=sys.stderr)
+
+
+def print_warning(message: str):
+    """Print warning message with color."""
+    print(f"{Colors.YELLOW}⚠{Colors.RESET} {message}", file=sys.stderr)
+
+
+def print_info(message: str):
+    """Print info message with color."""
+    print(f"{Colors.CYAN}ℹ{Colors.RESET} {message}", file=sys.stderr)
+
+
+def print_header(message: str):
+    """Print header with styling."""
+    print(f"\n{Colors.BOLD}{Colors.CYAN}{message}{Colors.RESET}")
+
+
+def print_progress_bar(current: int, total: int, prefix: str = '', suffix: str = '', length: int = 40):
+    """Print a progress bar."""
+    if total == 0:
+        return
+    
+    percent = current / total
+    filled = int(length * percent)
+    bar = '█' * filled + '░' * (length - filled)
+    
+    print(f'\r{prefix} |{Colors.CYAN}{bar}{Colors.RESET}| {current}/{total} {suffix}', end='', flush=True)
+    
+    if current == total:
+        print()  # New line on completion
 
 
 # ============================================================================
@@ -449,45 +526,78 @@ def format_conversation_output(result: Dict[str, Any], format_type: str = "json"
 
 
 # ============================================================================
+# Interactive Mode
+# ============================================================================
+
+def interactive_mode(args):
+    """Interactive mode for beginners."""
+    print_header("🔓 Antigravity Decryptor - Interactive Mode")
+    print(f"\n{Colors.BOLD}Welcome!{Colors.RESET} This tool decrypts Antigravity IDE conversation files.\n")
+    
+    # Get input path
+    if not args.input:
+        print(f"{Colors.CYAN}Step 1:{Colors.RESET} Input file or directory")
+        input_path = input(f"  Enter path to .pb file or directory: ").strip()
+        if not input_path:
+            print_error("No input provided. Exiting.")
+            sys.exit(1)
+        args.input = input_path
+    
+    # Get key if not provided
+    if not args.key:
+        print(f"\n{Colors.CYAN}Step 2:{Colors.RESET} Encryption key")
+        print(f"  You can:")
+        print(f"    1. Enter key now (base64 encoded)")
+        print(f"    2. Press Enter to try environment variable or Keychain")
+        key_input = input(f"  Enter key (or press Enter to auto-detect): ").strip()
+        if key_input:
+            args.key = key_input
+    
+    # Get output path
+    if not args.output:
+        print(f"\n{Colors.CYAN}Step 3:{Colors.RESET} Output location")
+        input_obj = Path(args.input)
+        if input_obj.is_file():
+            default_output = str(input_obj.with_suffix('.json'))
+        else:
+            default_output = str(input_obj / "decrypted")
+        
+        print(f"  Default: {Colors.DIM}{default_output}{Colors.RESET}")
+        output_input = input(f"  Enter output path (or press Enter for default): ").strip()
+        args.output = output_input if output_input else default_output
+    
+    # Get format
+    if not args.format or args.format == 'json':
+        print(f"\n{Colors.CYAN}Step 4:{Colors.RESET} Output format")
+        print(f"  1. JSON (default) - Structured data")
+        print(f"  2. Text - Human-readable")
+        format_choice = input(f"  Choose format (1/2 or press Enter for JSON): ").strip()
+        if format_choice == '2':
+            args.format = 'text'
+    
+    print_header("\n🚀 Starting decryption...")
+    print(f"  Input: {Colors.CYAN}{args.input}{Colors.RESET}")
+    print(f"  Output: {Colors.CYAN}{args.output}{Colors.RESET}")
+    print(f"  Format: {Colors.CYAN}{args.format}{Colors.RESET}\n")
+    
+    # Continue with regular processing
+    return process_with_args(args)
+
+
+# ============================================================================
 # CLI Interface
 # ============================================================================
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Decrypt and extract Antigravity IDE conversation files",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  # Decrypt a single file
-  python antigravity_decrypt.py conversation.pb --output conversation.json
-  
-  # Decrypt all files in a directory
-  python antigravity_decrypt.py ./conversations --output ./decrypted
-  
-  # Use custom key (base64 encoded)
-  python antigravity_decrypt.py conversation.pb --key "qFl7rbZfqbZoahxeyCwdCg=="
-  
-  # Set key via environment variable
-  export ANTIGRAVITY_KEY="qFl7rbZfqbZoahxeyCwdCg=="
-  python antigravity_decrypt.py conversation.pb
-        """
-    )
-    
-    parser.add_argument('input', help='Input .pb file or directory containing .pb files')
-    parser.add_argument('--output', '-o', help='Output file or directory (default: stdout or input_decrypted/)')
-    parser.add_argument('--key', '-k', help='Encryption key (base64 encoded). If not provided, tries keychain or ANTIGRAVITY_KEY env var')
-    parser.add_argument('--format', '-f', choices=['json', 'text'], default='json', help='Output format (default: json)')
-    parser.add_argument('--verbose', '-v', action='store_true', help='Verbose output')
-    
-    args = parser.parse_args()
-    
+def process_with_args(args):
+    """Process files with parsed arguments."""
     # Get encryption key
     key = None
     if args.key:
         try:
             key = base64.b64decode(args.key)
         except:
-            print(f"Error: Invalid key format. Key must be base64 encoded.", file=sys.stderr)
+            print_error("Invalid key format. Key must be base64 encoded.")
+            print_info("Example: qFl7rbZfqbZoahxeyCwdCg==")
             sys.exit(1)
     else:
         key = get_key_from_keychain()
@@ -495,15 +605,16 @@ Examples:
             key = get_key_from_env()
     
     if not key:
-        print("Error: Could not retrieve encryption key.", file=sys.stderr)
-        print("  Options:", file=sys.stderr)
-        print("  1. Use --key option with base64 encoded key", file=sys.stderr)
-        print("  2. Set ANTIGRAVITY_KEY environment variable", file=sys.stderr)
-        print("  3. On macOS, key will be retrieved from Keychain", file=sys.stderr)
+        print_error("Could not retrieve encryption key.")
+        print_info("You have several options to provide the encryption key:")
+        print(f"  {Colors.BOLD}1.{Colors.RESET} Use --key option: {Colors.DIM}python antigravity_decrypt.py file.pb --key \"YOUR_KEY\"{Colors.RESET}", file=sys.stderr)
+        print(f"  {Colors.BOLD}2.{Colors.RESET} Set environment variable: {Colors.DIM}export ANTIGRAVITY_KEY=\"YOUR_KEY\"{Colors.RESET}", file=sys.stderr)
+        print(f"  {Colors.BOLD}3.{Colors.RESET} On macOS: Key is auto-retrieved from Keychain (service: 'Antigravity Safe Storage')", file=sys.stderr)
+        print(f"\n{Colors.YELLOW}💡 Tip:{Colors.RESET} The key should be base64 encoded (e.g., 'qFl7rbZfqbZoahxeyCwdCg==')", file=sys.stderr)
         sys.exit(1)
     
     if args.verbose:
-        print(f"Using encryption key: {key.hex()[:32]}...", file=sys.stderr)
+        print_info(f"Using encryption key: {key.hex()[:32]}...")
     
     # Process input
     input_path = Path(args.input)
@@ -511,16 +622,20 @@ Examples:
     if input_path.is_file():
         # Single file
         if args.verbose:
-            print(f"Processing file: {input_path}", file=sys.stderr)
+            print_header(f"📄 Processing file: {input_path.name}")
         
-            result = process_conversation_file(str(input_path), key, args.verbose)
+        result = process_conversation_file(str(input_path), key, args.verbose)
         output = format_conversation_output(result, args.format)
         
         if args.output:
             with open(args.output, 'w', encoding='utf-8') as f:
                 f.write(output)
-            if args.verbose:
-                print(f"Output written to: {args.output}", file=sys.stderr)
+            if result['success']:
+                print_success(f"Successfully decrypted and saved to: {args.output}")
+                if result['metadata'].get('message_count', 0) > 0:
+                    print_info(f"Extracted {result['metadata']['message_count']} messages")
+            else:
+                print_error(f"Failed to decrypt: {result.get('error', 'Unknown error')}")
         else:
             print(output)
     
@@ -528,22 +643,33 @@ Examples:
         # Directory of files
         pb_files = list(input_path.glob("*.pb"))
         if not pb_files:
-            print(f"Error: No .pb files found in {input_path}", file=sys.stderr)
+            print_error(f"No .pb files found in {input_path}")
+            print_info(f"Looking for files with .pb extension in: {input_path.absolute()}")
             sys.exit(1)
         
-        if args.verbose:
-            print(f"Found {len(pb_files)} .pb files", file=sys.stderr)
+        print_header(f"📁 Batch Processing: {len(pb_files)} files found")
         
         output_dir = Path(args.output) if args.output else input_path / "decrypted"
         output_dir.mkdir(parents=True, exist_ok=True)
         
         results = []
+        successful = 0
+        failed = 0
+        
         for i, pb_file in enumerate(pb_files, 1):
-            if args.verbose:
-                print(f"[{i}/{len(pb_files)}] Processing {pb_file.name}...", file=sys.stderr)
+            # Show progress bar
+            if not args.verbose:
+                print_progress_bar(i - 1, len(pb_files), prefix='Progress:', suffix=f'{pb_file.name[:30]}...')
+            else:
+                print_info(f"[{i}/{len(pb_files)}] Processing {pb_file.name}...")
             
             result = process_conversation_file(str(pb_file), key, args.verbose)
             results.append(result)
+            
+            if result['success']:
+                successful += 1
+            else:
+                failed += 1
             
             # Save individual file
             output_file = output_dir / f"{pb_file.stem}_decrypted.{args.format}"
@@ -551,28 +677,89 @@ Examples:
             with open(output_file, 'w', encoding='utf-8') as f:
                 f.write(output)
         
+        # Complete progress bar
+        if not args.verbose:
+            print_progress_bar(len(pb_files), len(pb_files), prefix='Progress:', suffix='Complete!')
+        
         # Save summary
         summary_file = output_dir / "summary.json"
+        total_messages = sum(len(r['messages']) for r in results)
         with open(summary_file, 'w', encoding='utf-8') as f:
             json.dump({
                 "total_files": len(pb_files),
-                "successful": sum(1 for r in results if r['success']),
-                "failed": sum(1 for r in results if not r['success']),
-                "total_messages": sum(len(r['messages']) for r in results),
+                "successful": successful,
+                "failed": failed,
+                "total_messages": total_messages,
                 "files": results
             }, f, indent=2, default=str)
         
-        if args.verbose:
-            print(f"\nSummary:", file=sys.stderr)
-            print(f"  Total files: {len(pb_files)}", file=sys.stderr)
-            print(f"  Successful: {sum(1 for r in results if r['success'])}", file=sys.stderr)
-            print(f"  Failed: {sum(1 for r in results if not r['success'])}", file=sys.stderr)
-            print(f"  Total messages: {sum(len(r['messages']) for r in results)}", file=sys.stderr)
-            print(f"  Output directory: {output_dir}", file=sys.stderr)
+        # Print summary
+        print_header("\n📊 Summary")
+        print(f"  {Colors.GREEN}✓{Colors.RESET} Successful: {Colors.BOLD}{successful}{Colors.RESET}/{len(pb_files)}")
+        if failed > 0:
+            print(f"  {Colors.RED}✗{Colors.RESET} Failed: {Colors.BOLD}{failed}{Colors.RESET}/{len(pb_files)}")
+        print(f"  💬 Total messages extracted: {Colors.BOLD}{total_messages}{Colors.RESET}")
+        print(f"  📂 Output directory: {Colors.CYAN}{output_dir}{Colors.RESET}")
+        print(f"  📄 Summary saved to: {Colors.CYAN}{summary_file}{Colors.RESET}")
+        
+        if failed > 0:
+            print_warning(f"\n{failed} file(s) failed. Check summary.json for details.")
     
     else:
-        print(f"Error: {input_path} is not a file or directory", file=sys.stderr)
+        print_error(f"{input_path} is not a file or directory")
+        print_info(f"Please provide a valid .pb file or directory containing .pb files")
         sys.exit(1)
+
+
+def main():
+    """Main entry point for the CLI."""
+    parser = argparse.ArgumentParser(
+        description=f"{Colors.BOLD}🔓 Antigravity IDE Conversation Decryptor{Colors.RESET} v{__version__}\n\nDecrypt and extract human-readable conversations from Antigravity IDE's encrypted .pb files.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=f"""
+{Colors.BOLD}Examples:{Colors.RESET}
+  {Colors.CYAN}# Decrypt a single file{Colors.RESET}
+  python antigravity_decrypt.py conversation.pb --output conversation.json
+  
+  {Colors.CYAN}# Decrypt all files in a directory with progress tracking{Colors.RESET}
+  python antigravity_decrypt.py ./conversations --output ./decrypted
+  
+  {Colors.CYAN}# Use custom key (base64 encoded){Colors.RESET}
+  python antigravity_decrypt.py conversation.pb --key "qFl7rbZfqbZoahxeyCwdCg=="
+  
+  {Colors.CYAN}# Set key via environment variable{Colors.RESET}
+  export ANTIGRAVITY_KEY="qFl7rbZfqbZoahxeyCwdCg=="
+  python antigravity_decrypt.py conversation.pb
+  
+  {Colors.CYAN}# Get human-readable text output{Colors.RESET}
+  python antigravity_decrypt.py conversation.pb --format text --output conversation.txt
+  
+  {Colors.CYAN}# Interactive mode for beginners{Colors.RESET}
+  python antigravity_decrypt.py --interactive
+
+{Colors.BOLD}Key Management:{Colors.RESET}
+  Priority order: --key argument → ANTIGRAVITY_KEY env var → macOS Keychain
+  
+{Colors.BOLD}Need Help?{Colors.RESET}
+  See README.md or visit: https://github.com/arashz/antigravity_decryptor
+        """
+    )
+    
+    parser.add_argument('input', nargs='?', help='Input .pb file or directory containing .pb files')
+    parser.add_argument('--output', '-o', help='Output file or directory (default: stdout for files, ./decrypted for directories)')
+    parser.add_argument('--key', '-k', help='Encryption key (base64 encoded). Alternative: use ANTIGRAVITY_KEY env var')
+    parser.add_argument('--format', '-f', choices=['json', 'text'], default='json', help='Output format (default: json)')
+    parser.add_argument('--verbose', '-v', action='store_true', help='Show detailed processing information')
+    parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
+    parser.add_argument('--interactive', '-i', action='store_true', help='Interactive mode with prompts')
+    
+    args = parser.parse_args()
+    
+    # Interactive mode
+    if args.interactive or not args.input:
+        return interactive_mode(args)
+    
+    return process_with_args(args)
 
 
 if __name__ == '__main__':
