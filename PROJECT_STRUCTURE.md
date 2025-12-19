@@ -11,11 +11,25 @@ This is a standalone, portable tool for decrypting Antigravity IDE conversation 
 
 ## Documentation
 
-- **`README.md`** - Comprehensive documentation and usage guide
+### Main Documentation
+- **`README.md`** - Main documentation and usage guide
+- **`DOCS_INDEX.md`** - Complete documentation navigation guide
 - **`QUICKSTART.md`** - 2-minute quick start guide for new users
+
+### Developer Documentation
+- **`API_REFERENCE.md`** - Complete Python API reference with examples
+- **`ANALYZING_CONVERSATIONS.md`** - Guide to analyzing and extracting insights
+- **`UNDERSTANDING_THE_FORMAT.md`** - Technical deep-dive into file format and encryption
+
+### Support Documentation
+- **`FAQ.md`** - Frequently asked questions with quick answers
 - **`TROUBLESHOOTING.md`** - Detailed troubleshooting guide with solutions
+
+### Project Documentation
 - **`CONTRIBUTING.md`** - Guidelines for contributors
 - **`CHANGELOG.md`** - Version history and release notes
+- **`IMPROVEMENTS_SUMMARY.md`** - Summary of recent improvements
+- **`PROJECT_STRUCTURE.md`** - This file
 - **`LICENSE`** - MIT License
 
 ## Examples
